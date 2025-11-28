@@ -43,37 +43,20 @@ app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 
 // CORS configuration
-const allowedOrigins = [
-  "http://localhost:5173",
-  "http://localhost:3000",
-  "https://leftoverlink.com",
-  "https://www.leftoverlink.com",
-  // ADD YOUR VERCEL DOMAIN HERE:
-  "https://leftoverlink-djgn.vercel.app" 
-];
-
 const corsOptions = {
-  origin: function (origin, callback) {
+  origin: (origin, callback) => {
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      console.log("Blocked by CORS:", origin); // Helps debugging in Vercel logs
-      callback(new Error('Not allowed by CORS'));
-    }
+    // Dynamically allow the origin sending the request
+    callback(null, true);
   },
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Accept"],
-  credentials: true,
-  optionsSuccessStatus: 200
+  credentials: true, // This allows cookies/tokens
 };
 
 app.use(cors(corsOptions));
-
-// Handle preflight requests for all routes
-app.options('*', cors(corsOptions));
+app.options('*', cors(corsOptions)); // Handle Preflight
 
 // Import routes
 import authRoutes from "./routes/auth.js";
