@@ -78,7 +78,11 @@ export const api = {
 const handleResponse = async (response) => {
   const data = await response.json();
   if (!response.ok) {
-    throw new Error(data.message || "API Error");
+    // Create an error object
+    const error = new Error(data.message || "API Error");
+    // Attach the validation errors array from the backend to the error object
+    error.errors = data.errors;
+    throw error;
   }
   return data;
 };
